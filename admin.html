@@ -137,7 +137,7 @@
       }
     }
 
-    db.collection("users").orderBy("timestamp", "desc").onSnapshot(snapshot => {
+    db.collection("users1").orderBy("timestamp", "desc").onSnapshot(snapshot => {
       snapshot.docChanges().forEach(change => {
         const d = change.doc.data();
         const html = `<h4>${d.name}</h4><p>KNO: ${d.kno}</p><p>Mobile: ${d.mobile}</p>`;
